@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(30)
+  email     String   @unique @db.VarChar(30)
+  password  String   @db.VarChar(255)
+  createdAt DateTime @default(now())
+  
+  // Relations
+  createdCustomers Customer[] @relation("CustomerCreatedBy")
+  updatedCustomers Customer[] @relation("CustomerUpdatedBy")
+  createdVehicles  Vehicle[]  @relation("VehicleCreatedBy")
+  updatedVehicles  Vehicle[]  @relation("VehicleUpdatedBy")
+  createdServices  Service[]  @relation("ServiceCreatedBy")
+  updatedServices  Service[]  @relation("ServiceUpdatedBy")
+}
+
+model Customer {
+  id        Int      @id @default(autoincrement())
+  name      String   @db.VarChar(30)
+  phone     String   @db.VarChar(15) 
+  address   String   @db.VarChar(100)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  createdBy Int
+  creator   User     @relation("CustomerCreatedBy", fields: [createdBy], references: [id])
+  updatedBy Int
+  updater   User     @relation("CustomerUpdatedBy", fields: [updatedBy], references: [id])
+
+  vehicles Vehicle[]
+  services Service[]
+}
+
+model Vehicle {
+  id            Int      @id @default(autoincrement())
+  customerId    Int
+  customer      Customer @relation(fields: [customerId], references: [id])
+  vehicleNumber String   @db.VarChar(20)
+  vehicleType   String   @db.VarChar(25)
+  brand         String   @db.VarChar(25)
+  model         String   @db.VarChar(25)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  createdBy Int
+  creator   User     @relation("VehicleCreatedBy", fields: [createdBy], references: [id])
+  updatedBy Int
+  updater   User     @relation("VehicleUpdatedBy", fields: [updatedBy], references: [id])
+  
+  services Service[]
+}
+
+enum ServiceStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  DELIVERED
+}
+
+model Service {
+  id                 Int           @id @default(autoincrement())
+  customerId         Int
+  customer           Customer      @relation(fields: [customerId], references: [id])
+  vehicleId          Int
+  vehicle            Vehicle       @relation(fields: [vehicleId], references: [id])
+  
+  serviceDate        DateTime
+  problemDescription String        @db.VarChar(255)
+  workDone           String?       @db.Text
+  status             ServiceStatus @default(PENDING)
+  totalCost          Decimal?      @db.Decimal(10, 2)
+  notes              String?       @db.Text
+  
+  startedAt          DateTime?
+  completedAt        DateTime?
+  deliveredAt        DateTime?
+  
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
+
+  createdBy Int
+  creator   User     @relation("ServiceCreatedBy", fields: [createdBy], references: [id])
+  updatedBy Int
+  updater   User     @relation("ServiceUpdatedBy", fields: [updatedBy], references: [id])
+
+  parts ServicePart[]
+}
+
+model ServicePart {
+  id        Int      @id @default(autoincrement())
+  serviceId Int
+  service   Service  @relation(fields: [serviceId], references: [id])
+  partName  String   @db.VarChar(100)
+  quantity  Int      @default(1)
+  price     Decimal  @db.Decimal(10, 2)
+  createdAt DateTime @default(now())
+}
