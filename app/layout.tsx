@@ -8,6 +8,7 @@ export const metadata: Metadata = {
 
 import Sidebar from "@/components/Sidebar";
 import TopNav from "@/components/TopNav";
+import ToasterProvider from "@/components/ToasterProvider";
 
 export default function RootLayout({
   children,
@@ -17,6 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body className="antialiased font-sans text-slate-300 bg-[#0B1120] flex h-screen overflow-hidden">
+        <ToasterProvider />
         <Sidebar  />
         <div className="flex-1 flex flex-col h-full overflow-hidden relative">
           <TopNav />

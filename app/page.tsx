@@ -8,8 +8,8 @@ export default function Home() {
         Manage your customers, vehicles, and services easily.
       </p>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {['Customers', 'Vehicles', 'Services'].map((item) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {['Vehicles', 'Services'].map((item) => (
           <div key={item} className="p-6 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:scale-105 transition-all cursor-pointer">
             <h2 className="text-2xl font-semibold mb-2">{item}</h2>
             <p className="opacity-70 text-sm">View and manage {item.toLowerCase()} records.</p>
